@@ -1,0 +1,49 @@
+# Copy this file to sdkconfig.defaults and fill in your values.
+# sdkconfig.defaults is gitignored to protect credentials.
+
+# Target
+CONFIG_IDF_TARGET="esp32c6"
+
+# Flash
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# WiFi credentials
+CONFIG_WIFI_SSID="your_ssid"
+CONFIG_WIFI_PASSWORD="your_password"
+
+# Timezone — pick ONE region line, or use Custom for unlisted zones:
+#   CONFIG_TIMEZONE_UTC=y
+#   CONFIG_TIMEZONE_DUBAI=y          # UAE, Oman (UTC+4)
+#   CONFIG_TIMEZONE_KOLKATA=y        # India, Sri Lanka (UTC+5:30)
+#   CONFIG_TIMEZONE_BANGKOK=y        # Thailand, Vietnam (UTC+7)
+#   CONFIG_TIMEZONE_SINGAPORE=y      # Singapore, Malaysia (UTC+8)
+#   CONFIG_TIMEZONE_SHANGHAI=y       # China, HK, Taiwan (UTC+8)
+#   CONFIG_TIMEZONE_TOKYO=y          # Japan, South Korea (UTC+9)
+CONFIG_TIMEZONE_SYDNEY=y             # Australia/Sydney (UTC+10/+11)
+#   CONFIG_TIMEZONE_AUCKLAND=y       # New Zealand (UTC+12/+13)
+#   CONFIG_TIMEZONE_MOSCOW=y         # Moscow (UTC+3)
+#   CONFIG_TIMEZONE_LONDON=y         # UK (UTC+0/+1)
+#   CONFIG_TIMEZONE_PARIS=y          # Central Europe (UTC+1/+2)
+#   CONFIG_TIMEZONE_NEW_YORK=y       # US Eastern (UTC-5/-4)
+#   CONFIG_TIMEZONE_CHICAGO=y        # US Central (UTC-6/-5)
+#   CONFIG_TIMEZONE_DENVER=y         # US Mountain (UTC-7/-6)
+#   CONFIG_TIMEZONE_LOS_ANGELES=y    # US Pacific (UTC-8/-7)
+#   CONFIG_TIMEZONE_SAO_PAULO=y      # Brazil (UTC-3)
+#
+# For unlisted zones — use Custom + raw POSIX string:
+#   CONFIG_TIMEZONE_CUSTOM=y
+#   CONFIG_TIMEZONE_POSIX="IST-5:30"   # example: India
+
+# LVGL fonts
+CONFIG_LV_FONT_MONTSERRAT_14=y
+CONFIG_LV_FONT_MONTSERRAT_16=y
+CONFIG_LV_FONT_MONTSERRAT_20=y
+CONFIG_LV_FONT_MONTSERRAT_36=y
+
+# LVGL memory
+CONFIG_LV_MEM_SIZE_KILOBYTES=64
+
+# Disable BT (not needed for this project)
+CONFIG_BT_ENABLED=n

@@ -1,0 +1,99 @@
+menu "NTP Clock Configuration"
+
+    config WIFI_SSID
+        string "WiFi SSID"
+        default "your_ssid"
+        help
+            SSID of the WiFi network to connect to.
+
+    config WIFI_PASSWORD
+        string "WiFi Password"
+        default "your_password"
+        help
+            Password of the WiFi network.
+
+    config WIFI_CONNECT_TIMEOUT_MS
+        int "WiFi connect timeout (ms)"
+        default 15000
+        help
+            Maximum time to wait for WiFi connection.
+
+    config NTP_SERVER
+        string "NTP Server"
+        default "pool.ntp.org"
+        help
+            Primary NTP server hostname.
+
+    choice TIMEZONE_REGION
+        prompt "Timezone"
+        default TIMEZONE_SYDNEY
+        help
+            Select your timezone. DST transitions are handled automatically
+            for regions that observe daylight saving time.
+            For unlisted regions, choose Custom and set CONFIG_TIMEZONE_POSIX
+            directly in sdkconfig.defaults.
+
+        config TIMEZONE_UTC
+            bool "UTC"
+        config TIMEZONE_DUBAI
+            bool "Asia/Dubai (GST, UTC+4) — UAE, Oman"
+        config TIMEZONE_KOLKATA
+            bool "Asia/Kolkata (IST, UTC+5:30) — India, Sri Lanka"
+        config TIMEZONE_BANGKOK
+            bool "Asia/Bangkok (ICT, UTC+7) — Thailand, Vietnam, Indonesia West"
+        config TIMEZONE_SINGAPORE
+            bool "Asia/Singapore (SGT, UTC+8) — Singapore, Malaysia, Philippines"
+        config TIMEZONE_SHANGHAI
+            bool "Asia/Shanghai (CST, UTC+8) — China, Hong Kong, Taiwan"
+        config TIMEZONE_TOKYO
+            bool "Asia/Tokyo (JST, UTC+9) — Japan, South Korea"
+        config TIMEZONE_SYDNEY
+            bool "Australia/Sydney (AEST/AEDT, UTC+10/+11)"
+        config TIMEZONE_AUCKLAND
+            bool "Pacific/Auckland (NZST/NZDT, UTC+12/+13)"
+        config TIMEZONE_MOSCOW
+            bool "Europe/Moscow (MSK, UTC+3)"
+        config TIMEZONE_LONDON
+            bool "Europe/London (GMT/BST, UTC+0/+1)"
+        config TIMEZONE_PARIS
+            bool "Europe/Paris (CET/CEST, UTC+1/+2) — Central Europe"
+        config TIMEZONE_NEW_YORK
+            bool "America/New_York (EST/EDT, UTC-5/-4)"
+        config TIMEZONE_CHICAGO
+            bool "America/Chicago (CST/CDT, UTC-6/-5)"
+        config TIMEZONE_DENVER
+            bool "America/Denver (MST/MDT, UTC-7/-6)"
+        config TIMEZONE_LOS_ANGELES
+            bool "America/Los_Angeles (PST/PDT, UTC-8/-7)"
+        config TIMEZONE_SAO_PAULO
+            bool "America/Sao_Paulo (BRT, UTC-3)"
+        config TIMEZONE_CUSTOM
+            bool "Custom — set CONFIG_TIMEZONE_POSIX in sdkconfig.defaults"
+    endchoice
+
+    config TIMEZONE_POSIX
+        string
+        default "UTC0"                              if TIMEZONE_UTC
+        default "GST-4"                             if TIMEZONE_DUBAI
+        default "IST-5:30"                          if TIMEZONE_KOLKATA
+        default "ICT-7"                             if TIMEZONE_BANGKOK
+        default "SGT-8"                             if TIMEZONE_SINGAPORE
+        default "CST-8"                             if TIMEZONE_SHANGHAI
+        default "JST-9"                             if TIMEZONE_TOKYO
+        default "AEST-10AEDT,M10.1.0,M4.1.0/3"    if TIMEZONE_SYDNEY
+        default "NZST-12NZDT,M9.5.0,M4.1.0/3"     if TIMEZONE_AUCKLAND
+        default "MSK-3"                             if TIMEZONE_MOSCOW
+        default "GMT0BST,M3.5.0/1,M10.5.0"         if TIMEZONE_LONDON
+        default "CET-1CEST,M3.5.0,M10.5.0/3"      if TIMEZONE_PARIS
+        default "EST5EDT,M3.2.0,M11.1.0"           if TIMEZONE_NEW_YORK
+        default "CST6CDT,M3.2.0,M11.1.0"           if TIMEZONE_CHICAGO
+        default "MST7MDT,M3.2.0,M11.1.0"           if TIMEZONE_DENVER
+        default "PST8PDT,M3.2.0,M11.1.0"           if TIMEZONE_LOS_ANGELES
+        default "BRT3"                              if TIMEZONE_SAO_PAULO
+        default "AEST-10AEDT,M10.1.0,M4.1.0/3"    if TIMEZONE_CUSTOM
+        help
+            POSIX timezone string auto-derived from Timezone selection above.
+            For Custom: override this in sdkconfig.defaults, e.g.:
+            CONFIG_TIMEZONE_POSIX="EST5EDT,M3.2.0,M11.1.0"
+
+endmenu
