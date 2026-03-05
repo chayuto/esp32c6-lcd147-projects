@@ -1,0 +1,23 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "wifi_connect.c"
+        "ntp_sync.c"
+        "theme.c"
+        "led_ctrl.c"
+        "button.c"
+        "boot_screen.c"
+        "clock_face.c"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        lcd_driver
+        espressif__led_strip
+        nvs_flash
+        esp_wifi
+        esp_event
+        esp_netif
+        lwip
+        esp_timer
+        freertos
+)

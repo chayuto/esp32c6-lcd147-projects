@@ -23,7 +23,7 @@ This repo is built with an **agentic-first development workflow** — each proje
 
 | # | Project | Key Tech |
 |---|---|---|
-| — | *(coming soon)* | |
+| [01](projects/01_ntp_clock) | NTP Clock | LVGL animated clock, NTP sync, 4 themes, RGB LED ambient, button control |
 
 ---
 
@@ -46,19 +46,17 @@ esp32c6-lcd147-projects/
 
 ---
 
-## Agentic Development
+## Agent Skills (Claude Code)
 
-This repo is structured for use with **Claude Code** as the primary development agent.
+This repo is built with **[Claude Code](https://claude.ai/code)** as the primary development agent. Three slash-command skills handle all repetitive operations — each one encodes real lessons learned from building projects on this board:
 
-The `CLAUDE.md` file gives the agent persistent context about the board, build system, and conventions so you don't repeat yourself across sessions. The `.claude/commands/` skills handle the repetitive operations:
+| Skill | Usage | What it knows |
+|---|---|---|
+| `/build` | `/build <name>` | Activates IDF, sets `esp32c6` target if missing, auto-recovers from IRAM overflow / bad `dependencies.lock` / partition-too-small errors |
+| `/flash` | `/flash <name>` | Auto-detects serial port, handles mid-flash reconnect (normal for this board) |
+| `/new-project` | `/new-project <name>` | Scaffolds with correct `CMakeLists.txt`, 2MB `partitions.csv`, credential-safe `sdkconfig.defaults` pattern, LVGL threading rules pre-documented |
 
-```
-/build <project_name>       # Build with correct IDF target and error recovery
-/flash <project_name>       # Auto-detect port and flash
-/new-project <name>         # Scaffold a new project with correct structure
-```
-
-Each skill encodes lessons learned — common failure modes, board-specific quirks, correct init order — so the agent handles them automatically rather than rediscovering them each session.
+Project context lives in `CLAUDE.md` — board pinout, shared component APIs, critical build rules, LVGL gotchas — so the agent has full context from the first message of every session without repeated explanation.
 
 ---
 
