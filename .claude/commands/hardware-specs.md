@@ -73,9 +73,30 @@ Everything else (I2C, UART, GPIO) is CPU-driven.
 
 Use `espressif/esp_new_jpeg` v0.6.1 from the IDF Component Registry:
 - Supports **encoding on C6** (pure software, no hardware)
-- Add to `idf_component.yml`: `espressif/esp_new_jpeg: "~0.6.1"`
+- Add to `main/idf_component.yml`: `espressif/esp_new_jpeg: "~0.6.1"` — then use `espressif__esp_new_jpeg` in CMakeLists REQUIRES
 - API: `jpeg_enc_open()` → `jpeg_enc_process()` → `jpeg_enc_close()`
-- Input: RGB888 (convert from RGB565 first)
+
+**Encoder input formats (verified in production):**
+```
+Supported:     RGB888, RGBA, YCbYCr, YCbY2YCrY2, GRAY
+NOT supported: RGB565 (RGB565 is decoder OUTPUT only — do not pass to encoder)
+```
+Always convert RGB565 → RGB888 before encoding. For `lv_color_t` (LVGL RGB565 LE):
+```c
+uint8_t r = (c.ch.red   << 3) | (c.ch.red   >> 2);  // 5-bit → 8-bit
+uint8_t g = (c.ch.green << 2) | (c.ch.green >> 4);  // 6-bit → 8-bit
+uint8_t b = (c.ch.blue  << 3) | (c.ch.blue  >> 2);  // 5-bit → 8-bit
+```
+
+**Subsampling and dimension alignment (verified in production):**
+| Mode | Enum | Width req | Height req | Notes |
+|---|---|---|---|---|
+| 4:4:4 | `JPEG_SUBSAMPLE_444` | Any | Any | Use for arbitrary crops — no alignment needed |
+| 4:2:2 | `JPEG_SUBSAMPLE_422` | Multiple of 16 | Any | |
+| 4:2:0 | `JPEG_SUBSAMPLE_420` | Multiple of 16 | Multiple of 16 | Best compression, strictest |
+
+→ **Use `JPEG_SUBSAMPLE_444` for snapshot tools** where canvas dimensions aren't multiples of 16.
+
 - **Downscale 2× before encoding** to keep RGB888 intermediate buffer manageable:
   - Full res RGB888: 172×320×3 = 165KB (OOM risk)
   - Half res RGB888: 86×160×3 = 41KB (safe, fits in BSS)
