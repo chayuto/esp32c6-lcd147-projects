@@ -24,6 +24,7 @@ This repo is built with an **agentic-first development workflow** — each proje
 | # | Project | Key Tech |
 |---|---|---|
 | [01](projects/01_ntp_clock) | NTP Clock | LVGL animated clock, NTP sync, 4 themes, RGB LED ambient, button control |
+| [02](projects/02_wifi_monitor) | Wi-Fi Monitor | Passive 2.4 GHz sniffer, channel utilization, RF quality index, device count, LED health indicator |
 
 ---
 

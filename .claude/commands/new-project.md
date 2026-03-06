@@ -57,8 +57,32 @@ CONFIG_BT_ENABLED=n
   The macro form is a compound literal that causes compile errors in some contexts.
 - All LVGL object mutations must happen inside `lv_timer` callbacks.
   Never call `lv_label_set_text()` or similar directly from a FreeRTOS task.
+  Violation = blank screen (LVGL crashes before first render).
 - `lv_spinner_create(parent, speed_ms, arc_degrees)` takes 3 arguments total.
 - Arc angle 270° = top of circle (12 o'clock). Angles increase clockwise.
+
+## Wi-Fi Promiscuous Mode (ESP32-C6 specific)
+
+- `wifi_pkt_rx_ctrl_t` is typedef'd to `esp_wifi_rxctrl_t` on ESP32-C6.
+  Fields `sig_mode`, `mcs`, `sgi`, `cwb` do NOT exist. Use `cur_bb_format` instead.
+- `esp_wifi_set_promiscuous_rx_cb()` runs in Wi-Fi driver task (priority ~23), NOT an ISR.
+  Use `xQueueSend()`, never `xQueueSendFromISR()`.
+- Mark the callback `IRAM_ATTR`. Keep it fast — use FNV-1a hash, not SHA-256.
+- Required init sequence (even for null/sniffer mode, no network join):
+  ```c
+  esp_netif_init();
+  esp_event_loop_create_default();
+  wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+  esp_wifi_init(&cfg);
+  esp_wifi_set_mode(WIFI_MODE_NULL);
+  esp_wifi_start();
+  esp_wifi_set_promiscuous(true);
+  esp_wifi_set_promiscuous_rx_cb(my_cb);
+  esp_wifi_set_channel(ch, WIFI_SECOND_CHAN_NONE);
+  ```
+- CMakeLists REQUIRES for promiscuous projects:
+  `esp_wifi esp_event esp_netif esp_timer mbedtls esp_system freertos driver`
+  Note: use `esp_system` (not `esp_task_wdt`) — it's not standalone in IDF 5.5.
 
 ## Shared Components Available
 
