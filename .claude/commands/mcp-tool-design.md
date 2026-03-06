@@ -72,9 +72,17 @@ Errors must be **self-correcting** — give the LLM enough info to fix and retry
 **Bad:** `"error": "invalid params"`
 **Good:** `"x out of range: got 200, must be 0-171"`
 
-For tool-level errors (bad args), use `isError: true` in the result, NOT a JSON-RPC error object:
+### Two distinct error channels — do not mix them:
+
+| Error type | When | Response shape |
+|---|---|---|
+| Protocol error | Parse failure, unknown method, server crash | JSON-RPC `"error"` object at top level |
+| Tool error | Bad args, resource unavailable, operation failed | `"result"` with `"isError": true` in content |
+
+**Tool error (correct):**
 ```json
 {
+  "jsonrpc": "2.0", "id": 1,
   "result": {
     "content": [{"type": "text", "text": "x out of range: got 200, must be 0-171"}],
     "isError": true
@@ -82,7 +90,17 @@ For tool-level errors (bad args), use `isError: true` in the result, NOT a JSON-
 }
 ```
 
-Reserve JSON-RPC `"error"` objects for protocol-level failures (parse error, method not found).
+**Protocol error (correct):**
+```json
+{
+  "jsonrpc": "2.0", "id": null,
+  "error": {"code": -32700, "message": "Parse error"}
+}
+```
+
+> **Common mistake:** returning JSON-RPC `error` for bad tool arguments. The LLM still recovers,
+> but tool orchestrators (Claude Desktop, MCP inspector) treat `isError` results differently from
+> protocol errors — `isError` stays in the conversation; protocol errors may abort the session.
 
 ## 7. Tool Ordering in `tools/list`
 
