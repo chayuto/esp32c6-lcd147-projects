@@ -1,0 +1,27 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "wifi_sniffer.c"
+        "airtime.c"
+        "channel_util.c"
+        "rf_metrics.c"
+        "device_counter.c"
+        "sniffer_tasks.c"
+        "ui_display.c"
+        "led_ctrl.c"
+        "button.c"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        lcd_driver
+        espressif__led_strip
+        nvs_flash
+        esp_wifi
+        esp_event
+        esp_netif
+        esp_timer
+        mbedtls
+        esp_system
+        freertos
+        driver
+)

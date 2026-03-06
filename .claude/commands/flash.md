@@ -11,3 +11,9 @@ Steps:
 4. Run `idf.py -C projects/<name> -p <port> flash 2>&1`
 5. A brief connection drop mid-flash (~14%) is normal for this board — it auto-recovers.
 6. Confirm "Done" and "Hard resetting" at the end.
+7. NEVER run `idf.py flash monitor` combined in a non-TTY shell (piped, subshell, agent).
+   Monitor exits immediately in non-TTY → flash aborts at ~56% → corrupt firmware → "No bootable app" panic.
+   Always flash separately first, confirm 100% write, then open serial separately:
+   ```zsh
+   ~/.espressif/python_env/idf5.5_py3.14_env/bin/python3 -m serial.tools.miniterm /dev/cu.usbmodem1101 115200
+   ```
