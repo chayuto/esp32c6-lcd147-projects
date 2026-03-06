@@ -36,6 +36,25 @@ No configuration required. This project does not join any Wi-Fi network.
 
 Device counting uses HMAC-SHA256 with hourly salt rotation. No MAC addresses are stored or logged. All observations expire after 60 seconds. Device count is an upper-bound estimate (accuracy ~75–96% depending on device OS version).
 
+## Project Structure
+
+```
+02_wifi_monitor/
+├── main/
+│   ├── main.c              # Init, task orchestration, app state machine
+│   ├── wifi_sniffer.c/.h   # Promiscuous RX callback, packet queue
+│   ├── sniffer_tasks.c/.h  # Consumer tasks — dispatch from packet queue
+│   ├── airtime.c/.h        # Air-time estimation from frame durations
+│   ├── channel_util.c/.h   # Channel utilization rolling average
+│   ├── rf_metrics.c/.h     # RF quality index, SNR, retry rate
+│   ├── device_counter.c/.h # HMAC-SHA256 fingerprinting, hourly salt rotation
+│   ├── ui_display.c/.h     # LVGL screen layout, metric label updates
+│   ├── led_ctrl.c/.h       # LED task — green/orange/red health indicator
+│   ├── button.c/.h         # GPIO 9 debounce, short/long press
+│   └── app_state.h         # Shared state struct + mutex
+└── partitions.csv          # 2MB app partition
+```
+
 ## Known Limitations
 
 - **2.4 GHz only** — ESP32-C6 has no 5 GHz radio

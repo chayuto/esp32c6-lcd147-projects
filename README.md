@@ -1,8 +1,8 @@
 # esp32c6-lcd147-projects
 
-A collection of ESP-IDF projects for the **ESP32-C6 with 1.47" ST7789 LCD** board.
+A portfolio of ESP-IDF firmware projects for the **ESP32-C6 with 1.47" ST7789 LCD** board.
 
-This repo is built with an **agentic-first development workflow** — each project is developed with [Claude Code](https://claude.ai/code) as the primary development agent, using project-scoped skills and context defined in `CLAUDE.md` and `.claude/commands/`.
+Built with an **agentic-first development workflow** — each project is developed with [Claude Code](https://claude.ai/code) as the primary agent. Hardware specs, build rules, LVGL gotchas, and lessons learned across all projects live in `CLAUDE.md` and `.claude/commands/`, giving the agent full context from the first message of every session.
 
 ---
 
@@ -10,21 +10,36 @@ This repo is built with an **agentic-first development workflow** — each proje
 
 | Feature | Detail |
 |---|---|
-| Chip | ESP32-C6FH8, RISC-V 160MHz |
+| Chip | ESP32-C6FH8, RISC-V 160MHz, single-core |
 | Flash | 8MB embedded |
-| Display | 1.47" ST7789, 172×320, SPI |
-| Storage | SD card, SPI (shared bus with LCD) |
+| Display | 1.47" ST7789, 172×320, SPI2 DMA |
+| Storage | SD card, SPI2 shared bus |
 | Wireless | Wi-Fi 6, BT 5 LE, IEEE 802.15.4 (Thread / Zigbee / Matter) |
-| LED | RGB LED strip |
+| LED | Single WS2812 RGB on GPIO 8 |
+| Button | BOOT button GPIO 9 |
 
 ---
 
 ## Projects
 
-| # | Project | Key Tech |
+| # | Project | Description |
 |---|---|---|
-| [01](projects/01_ntp_clock) | NTP Clock | LVGL animated clock, NTP sync, 4 themes, RGB LED ambient, button control |
-| [02](projects/02_wifi_monitor) | Wi-Fi Monitor | Passive 2.4 GHz sniffer, channel utilization, RF quality index, device count, LED health indicator |
+| [01](projects/01_ntp_clock) | **NTP Clock** | Live NTP-synced clock with animated LVGL UI, 4 color themes, RGB LED ambient sync, button theme/LED control |
+| [02](projects/02_wifi_monitor) | **Wi-Fi Monitor** | Passive 2.4 GHz promiscuous sniffer — channel utilization, RF quality index, HMAC-SHA256 device fingerprinting, LED health indicator |
+| [11](projects/11_mcp_server_display) | **MCP Server Display** | ESP32-C6 as a Model Context Protocol (MCP) server — an AI assistant draws shapes and text on the LCD via JSON-RPC 2.0 over Wi-Fi; JPEG snapshots close the visual feedback loop |
+
+---
+
+## Skills Demonstrated
+
+| Area | Details |
+|---|---|
+| Embedded C / FreeRTOS | Queues, mutexes, DMA SPI, ISR-safe vs task callbacks, single-core task model |
+| LVGL 8 | Animated arcs, canvas draw API, timer-dispatch pattern for thread safety |
+| Networking | Wi-Fi 6 STA, HTTP server, JSON-RPC 2.0 (MCP), mDNS service discovery |
+| AI / LLM integration | MCP server on bare metal, tool schema design, visual feedback loop |
+| Security | HMAC-SHA256 device fingerprinting, hourly salt rotation, no raw MAC storage |
+| Testing | Python integration test suite, 8 automated suites, snapshot verification |
 
 ---
 
@@ -34,43 +49,37 @@ This repo is built with an **agentic-first development workflow** — each proje
 esp32c6-lcd147-projects/
 ├── projects/             # One ESP-IDF project per subdirectory
 ├── shared/
-│   └── components/       # Shared components across all projects (LVGL, wifi_connect, etc.)
+│   └── components/       # Shared: LVGL 8.3.11, lcd_driver, led_strip
 ├── docs/
 │   └── media/            # Board photos and demo videos
-├── CLAUDE.md             # Agent context — board specs, build rules, conventions
+├── CLAUDE.md             # Agent context — board specs, APIs, build rules, LVGL gotchas
 └── .claude/
-    └── commands/              # Project-scoped agent skills
-        ├── build.md           # /build          — activate IDF and build a project
-        ├── flash.md           # /flash          — detect port and flash to board
-        ├── new-project.md     # /new-project    — scaffold a new project correctly
-        ├── hardware-specs.md  # /hardware-specs — ESP32-C6 hardware capabilities & limits
-        └── mcp-tool-design.md # /mcp-tool-design — MCP server tool schema checklist
+    └── commands/         # Slash-command agent skills
+        ├── build.md           # /build          — IDF activate + build with auto-recovery
+        ├── flash.md           # /flash          — port detect + flash
+        ├── new-project.md     # /new-project    — scaffold with correct patterns
+        ├── hardware-specs.md  # /hardware-specs — C6 hardware reference (accelerators, RAM budget)
+        └── mcp-tool-design.md # /mcp-tool-design — MCP schema checklist (tool budget, error design)
 ```
 
 ---
 
 ## Agent Skills (Claude Code)
 
-This repo is built with **[Claude Code](https://claude.ai/code)** as the primary development agent. Slash-command skills handle repetitive operations and encode hardware knowledge learned across all projects:
-
 | Skill | Usage | What it knows |
 |---|---|---|
-| `/build` | `/build <name>` | Activates IDF, sets `esp32c6` target if missing, auto-recovers from IRAM overflow / bad `dependencies.lock` / partition-too-small errors |
+| `/build` | `/build <name>` | Activates IDF, sets `esp32c6` target if missing, auto-recovers from IRAM overflow, bad `dependencies.lock`, partition-too-small |
 | `/flash` | `/flash <name>` | Auto-detects serial port, handles mid-flash reconnect (normal for this board) |
-| `/new-project` | `/new-project <name>` | Scaffolds with correct `CMakeLists.txt`, 2MB `partitions.csv`, credential-safe `sdkconfig.defaults` pattern, LVGL threading rules pre-documented |
-| `/hardware-specs` | `/hardware-specs` | **New** — Full ESP32-C6 hardware reference: what accelerators exist (AES, SHA, HMAC), what doesn't (no JPEG, no FPU, no SIMD), DMA peripheral list, RAM budget template, Wi-Fi modem sleep gotcha, `esp_new_jpeg` guidance |
-| `/mcp-tool-design` | `/mcp-tool-design` | **New** — MCP server design checklist: 6-component tool description framework, tool budget rules (5–8 max), negative guidance patterns, error response design, image content type for display servers, `/ping` health endpoint |
-
-Project context lives in `CLAUDE.md` — board pinout, shared component APIs, critical build rules, LVGL gotchas — so the agent has full context from the first message of every session without repeated explanation.
+| `/new-project` | `/new-project <name>` | Scaffolds with `CMakeLists.txt`, 2MB `partitions.csv`, credential-safe `sdkconfig.defaults`, LVGL threading rules |
+| `/hardware-specs` | `/hardware-specs` | Full C6 hardware reference: AES/SHA/HMAC accelerators, no JPEG/FPU/SIMD, RAM budget template, Wi-Fi modem sleep, `esp_new_jpeg` guidance |
+| `/mcp-tool-design` | `/mcp-tool-design` | MCP design checklist: 6-component tool description framework, tool budget (max 8), negative guidance patterns, error channels, image content type |
 
 ---
 
-## Requirements
+## Requirements & Building
 
 - [ESP-IDF 5.5+](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/)
 - Target: `esp32c6`
-
-## Building
 
 ```zsh
 # Activate IDF (required once per shell session)
@@ -79,11 +88,9 @@ Project context lives in `CLAUDE.md` — board pinout, shared component APIs, cr
 # First time only — set target
 idf.py -C projects/<name> set-target esp32c6
 
-# Build
+# Build and flash
 idf.py -C projects/<name> build
-
-# Flash (replace port as needed)
 idf.py -C projects/<name> -p /dev/cu.usbmodem1101 flash
 ```
 
-> Each project in `projects/` uses `../../shared/components` via `EXTRA_COMPONENT_DIRS` in its `CMakeLists.txt`, so shared components (LVGL etc.) are available without duplication.
+Each project uses `../../shared/components` via `EXTRA_COMPONENT_DIRS` — shared components (LVGL, lcd_driver) are available without duplication.

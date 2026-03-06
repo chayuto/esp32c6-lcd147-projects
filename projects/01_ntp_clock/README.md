@@ -2,10 +2,6 @@
 
 A live NTP-synced clock with animated LVGL UI, theme switching via button, and RGB LED ambient sync.
 
-## Demo
-
-*(photo/video coming soon)*
-
 ## Features
 
 - Real-time clock synced via NTP (configurable timezone, default Thailand ICT UTC+7)
