@@ -92,7 +92,37 @@ LLM attention is front-weighted. Order matters:
 3. Most commonly used tools next
 4. Specialized or rare tools last
 
-## 8. Health Endpoint
+## 8. Visual Feedback — Image Content Type
+
+For any MCP server driving a display or generating visual output, add a snapshot/screenshot tool.
+The MCP spec supports `"type":"image"` in tool results — vision-capable LLMs (Claude) will see it:
+
+```json
+{
+  "result": {
+    "content": [
+      {
+        "type": "image",
+        "data": "<base64-encoded JPEG or PNG>",
+        "mimeType": "image/jpeg"
+      }
+    ],
+    "isError": false
+  }
+}
+```
+
+**This closes the read→reason→write loop.** Without it the LLM draws blind and cannot self-correct.
+
+Tool description must warn: "Do NOT call in rapid succession — encoding is slow. Allow Nms between calls."
+
+On embedded (ESP32-C6): use `espressif/esp_new_jpeg` v0.6.1 from the component registry (pure C,
+supports encoding on all 8 ESP32 targets including C6). Hardware JPEG exists only on ESP32-P4.
+Downsample 2× before encoding to keep the RGB888 intermediate buffer within RAM budget.
+Static-allocate the RGB888 and JPEG output buffers (BSS) to avoid heap fragmentation.
+Protect the pixel buffer with a mutex — rendering task writes, snapshot handler reads, different tasks.
+
+## 10. Health Endpoint
 
 Always expose `GET /ping` alongside `POST /mcp`:
 ```json
@@ -133,5 +163,7 @@ Before shipping any `tools/list` response:
 - [ ] All array params have `maxItems` in schema
 - [ ] Error messages include the bad value and the valid range
 - [ ] Discovery/info tool is listed first
+- [ ] Snapshot/screenshot tool exists if server drives a display or generates visual output
+- [ ] Snapshot tool description warns about call frequency / encoding latency
 - [ ] `GET /ping` health endpoint exists
 - [ ] Prerequisites are stated explicitly in description prose (not just inferred)

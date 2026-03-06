@@ -39,23 +39,27 @@ esp32c6-lcd147-projects/
 │   └── media/            # Board photos and demo videos
 ├── CLAUDE.md             # Agent context — board specs, build rules, conventions
 └── .claude/
-    └── commands/         # Project-scoped agent skills
-        ├── build.md      # /build  — activate IDF and build a project
-        ├── flash.md      # /flash  — detect port and flash to board
-        └── new-project.md # /new-project — scaffold a new project correctly
+    └── commands/              # Project-scoped agent skills
+        ├── build.md           # /build          — activate IDF and build a project
+        ├── flash.md           # /flash          — detect port and flash to board
+        ├── new-project.md     # /new-project    — scaffold a new project correctly
+        ├── hardware-specs.md  # /hardware-specs — ESP32-C6 hardware capabilities & limits
+        └── mcp-tool-design.md # /mcp-tool-design — MCP server tool schema checklist
 ```
 
 ---
 
 ## Agent Skills (Claude Code)
 
-This repo is built with **[Claude Code](https://claude.ai/code)** as the primary development agent. Three slash-command skills handle all repetitive operations — each one encodes real lessons learned from building projects on this board:
+This repo is built with **[Claude Code](https://claude.ai/code)** as the primary development agent. Slash-command skills handle repetitive operations and encode hardware knowledge learned across all projects:
 
 | Skill | Usage | What it knows |
 |---|---|---|
 | `/build` | `/build <name>` | Activates IDF, sets `esp32c6` target if missing, auto-recovers from IRAM overflow / bad `dependencies.lock` / partition-too-small errors |
 | `/flash` | `/flash <name>` | Auto-detects serial port, handles mid-flash reconnect (normal for this board) |
 | `/new-project` | `/new-project <name>` | Scaffolds with correct `CMakeLists.txt`, 2MB `partitions.csv`, credential-safe `sdkconfig.defaults` pattern, LVGL threading rules pre-documented |
+| `/hardware-specs` | `/hardware-specs` | **New** — Full ESP32-C6 hardware reference: what accelerators exist (AES, SHA, HMAC), what doesn't (no JPEG, no FPU, no SIMD), DMA peripheral list, RAM budget template, Wi-Fi modem sleep gotcha, `esp_new_jpeg` guidance |
+| `/mcp-tool-design` | `/mcp-tool-design` | **New** — MCP server design checklist: 6-component tool description framework, tool budget rules (5–8 max), negative guidance patterns, error response design, image content type for display servers, `/ping` health endpoint |
 
 Project context lives in `CLAUDE.md` — board pinout, shared component APIs, critical build rules, LVGL gotchas — so the agent has full context from the first message of every session without repeated explanation.
 
