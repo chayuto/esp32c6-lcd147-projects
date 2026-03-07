@@ -1,0 +1,15 @@
+menu "MCP GPIO Configuration"
+
+    config GPIO_WIFI_SSID
+        string "WiFi SSID"
+        default "YOUR_SSID_HERE"
+        help
+            SSID of the Wi-Fi network to connect to.
+
+    config GPIO_WIFI_PASSWORD
+        string "WiFi Password"
+        default "YOUR_PASSWORD_HERE"
+        help
+            Password for the Wi-Fi network.
+
+endmenu

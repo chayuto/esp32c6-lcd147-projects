@@ -1,0 +1,25 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "gpio_state.c"
+        "mcp_tools.c"
+        "mcp_server.c"
+        "ui_display.c"
+        "led_status.c"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        lcd_driver
+        nvs_flash
+        esp_wifi
+        esp_event
+        esp_netif
+        esp_http_server
+        json
+        espressif__mdns
+        esp_system
+        freertos
+        driver
+        esp_adc
+        espressif__led_strip
+)

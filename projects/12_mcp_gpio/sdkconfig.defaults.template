@@ -1,0 +1,30 @@
+CONFIG_IDF_TARGET="esp32c6"
+
+# Flash / Partition
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# LVGL fonts — Montserrat 14 only (no drawing, smaller flash footprint vs project 11)
+CONFIG_LV_FONT_MONTSERRAT_14=y
+
+# LVGL memory — table + small widgets only
+CONFIG_LV_MEM_SIZE_KILOBYTES=16
+
+# Disable BT — saves ~50KB flash + ~30KB RAM
+CONFIG_BT_ENABLED=n
+
+# FreeRTOS
+CONFIG_FREERTOS_HZ=1000
+CONFIG_FREERTOS_UNICORE=y
+
+# HTTP server — MCP JSON bodies are small for GPIO (no JPEG)
+CONFIG_HTTPD_MAX_URI_LEN=512
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=512
+
+# Watchdog — GPIO ops are fast, 10s is plenty
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=10
+
+# Wi-Fi credentials — copy this file to sdkconfig.defaults and fill in
+CONFIG_GPIO_WIFI_SSID="YOUR_SSID_HERE"
+CONFIG_GPIO_WIFI_PASSWORD="YOUR_PASSWORD_HERE"
