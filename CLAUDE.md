@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Multi-project portfolio repo for ESP32-C6 with 1.47" ST7789 LCD.
+Multi-project firmware repo for ESP32-C6 with 1.47" ST7789 LCD.
 Each project lives in `projects/`. Shared ESP-IDF components live in `shared/components/`.
 
 ## Repo Structure

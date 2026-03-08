@@ -1,6 +1,6 @@
 # esp32c6-lcd147-projects
 
-A portfolio of ESP-IDF firmware projects for the **ESP32-C6 with 1.47" ST7789 LCD** board.
+A collection of ESP-IDF firmware projects for the **ESP32-C6 with 1.47" ST7789 LCD** board.
 
 Built with an **agentic-first development workflow** — each project is developed with [Claude Code](https://claude.ai/code) as the primary agent. Hardware specs, build rules, LVGL gotchas, and lessons learned across all projects live in `CLAUDE.md` and `.claude/commands/`, giving the agent full context from the first message of every session.
 
