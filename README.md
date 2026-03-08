@@ -100,3 +100,9 @@ idf.py -C projects/<name> -p /dev/cu.usbmodem1101 flash
 ```
 
 Each project uses `../../shared/components` via `EXTRA_COMPONENT_DIRS` — shared components (LVGL, lcd_driver) are available without duplication.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
